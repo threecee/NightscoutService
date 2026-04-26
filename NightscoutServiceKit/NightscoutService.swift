@@ -10,6 +10,11 @@ import os.log
 import HealthKit
 import LoopKit
 import NightscoutKit
+#if os(iOS)
+import UIKit
+#elseif os(watchOS)
+import WatchKit
+#endif
 
 public enum NightscoutServiceError: Error {
     case incompatibleTherapySettings
@@ -332,7 +337,13 @@ extension NightscoutService: RemoteDataService {
             return
         }
 
+        #if os(iOS)
         let source = "loop://\(UIDevice.current.name)"
+        #elseif os(watchOS)
+        let source = "loop://\(WKInterfaceDevice.current().name)"
+        #else
+        let source = "loop://unknown"
+        #endif
 
         let treatments = stored.compactMap { (event) -> NightscoutTreatment? in
             // ignore doses; we'll get those via uploadDoseData

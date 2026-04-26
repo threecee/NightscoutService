@@ -10,14 +10,26 @@ import Foundation
 import LoopKit
 import NightscoutKit
 import HealthKit
+#if os(iOS)
+import UIKit
+#elseif os(watchOS)
+import WatchKit
+#endif
 
 extension SyncCarbObject {
 
     func carbCorrectionNightscoutTreatment(withObjectId objectId: String? = nil) -> CarbCorrectionNightscoutTreatment? {
+        #if os(iOS)
+        let deviceName = UIDevice.current.name
+        #elseif os(watchOS)
+        let deviceName = WKInterfaceDevice.current().name
+        #else
+        let deviceName = "unknown"
+        #endif
 
         return CarbCorrectionNightscoutTreatment(
             timestamp: startDate,
-            enteredBy: "loop://\(UIDevice.current.name)",
+            enteredBy: "loop://\(deviceName)",
             id: objectId,
             carbs: lround(grams),
             absorptionTime: absorptionTime,

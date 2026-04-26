@@ -220,7 +220,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C1C1349827DD35260097B5AD /* LoopKitUI.framework in Frameworks */,
 				C1C1349627DD35060097B5AD /* LoopKit.framework in Frameworks */,
 				C1CEBFF429BCC104007FD8A3 /* NightscoutKit in Frameworks */,
 				C1B9ACF827DE987400857532 /* OneTimePassword in Frameworks */,
@@ -566,8 +565,6 @@
 				A91BAC5222BC69BB00ABF1BB /* PBXTargetDependency */,
 			);
 			name = NightscoutServiceKitUI;
-			packageProductDependencies = (
-			);
 			productName = NightscoutServiceKitUI;
 			productReference = A91BAC3A22BC69B500ABF1BB /* NightscoutServiceKitUI.framework */;
 			productType = "com.apple.product-type.framework";
@@ -590,8 +587,6 @@
 				C1C134A027DD38000097B5AD /* PBXTargetDependency */,
 			);
 			name = NightscoutServiceKitPlugin;
-			packageProductDependencies = (
-			);
 			productName = NightscoutServiceKitPlugin;
 			productReference = A99C713123396CB100AB9035 /* NightscoutServiceKitPlugin.loopplugin */;
 			productType = "com.apple.product-type.framework";
@@ -1069,8 +1064,10 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator watchos watchsimulator";
 				SUPPORTS_MACCATALYST = NO;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1,2,4";
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Debug;
 		};
@@ -1097,8 +1094,10 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator watchos watchsimulator";
 				SUPPORTS_MACCATALYST = NO;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1,2,4";
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Release;
 		};

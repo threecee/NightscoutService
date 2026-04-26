@@ -8,6 +8,11 @@
 
 import LoopKit
 import NightscoutKit
+#if os(iOS)
+import UIKit
+#elseif os(watchOS)
+import WatchKit
+#endif
 
 extension NightscoutClient {
 
@@ -98,7 +103,13 @@ extension NightscoutClient {
             return
         }
 
+        #if os(iOS)
         let source = "loop://\(UIDevice.current.name)"
+        #elseif os(watchOS)
+        let source = "loop://\(WKInterfaceDevice.current().name)"
+        #else
+        let source = "loop://unknown"
+        #endif
 
         let treatments = data.compactMap { (event) -> NightscoutTreatment? in
             return event.treatment(enteredBy: source)
@@ -123,8 +134,14 @@ extension NightscoutClient {
             return
         }
 
+        #if os(iOS)
         let source = "loop://\(UIDevice.current.name)"
-        
+        #elseif os(watchOS)
+        let source = "loop://\(WKInterfaceDevice.current().name)"
+        #else
+        let source = "loop://unknown"
+        #endif
+
         let treatments = data.compactMap { (dose) -> NightscoutTreatment? in
             var objectId: String? = nil
             

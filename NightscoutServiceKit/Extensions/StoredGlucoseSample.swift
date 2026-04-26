@@ -8,6 +8,11 @@
 
 import LoopKit
 import NightscoutKit
+#if os(iOS)
+import UIKit
+#elseif os(watchOS)
+import WatchKit
+#endif
 
 extension StoredGlucoseSample {
 
@@ -28,7 +33,13 @@ extension StoredGlucoseSample {
         } else if !provenanceIdentifier.contains("loopkit.Loop") {
             deviceString = provenanceIdentifier
         } else {
+            #if os(iOS)
             deviceString = "loop://\(UIDevice.current.name)"
+            #elseif os(watchOS)
+            deviceString = "loop://\(WKInterfaceDevice.current().name)"
+            #else
+            deviceString = "loop://unknown"
+            #endif
         }
 
         return GlucoseEntry(

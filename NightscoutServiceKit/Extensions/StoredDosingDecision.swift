@@ -10,6 +10,11 @@ import Foundation
 import HealthKit
 import LoopKit
 import NightscoutKit
+#if os(iOS)
+import UIKit
+#elseif os(watchOS)
+import WatchKit
+#endif
 
 extension StoredDosingDecision {
     
@@ -137,13 +142,29 @@ extension StoredDosingDecision {
     }
     
     var uploaderStatus: UploaderStatus {
+        #if os(iOS)
         let uploaderDevice = UIDevice.current
         let battery = uploaderDevice.isBatteryMonitoringEnabled ? Int(uploaderDevice.batteryLevel * 100) : 0
-        return UploaderStatus(name: uploaderDevice.name, timestamp: date, battery: battery)
+        let uploaderName = uploaderDevice.name
+        #elseif os(watchOS)
+        let battery = 0
+        let uploaderName = WKInterfaceDevice.current().name
+        #else
+        let battery = 0
+        let uploaderName = "unknown"
+        #endif
+        return UploaderStatus(name: uploaderName, timestamp: date, battery: battery)
     }
-    
+
     func deviceStatus(automaticDoseDecision: StoredDosingDecision?) -> DeviceStatus {
-        return DeviceStatus(device: "loop://\(UIDevice.current.name)",
+        #if os(iOS)
+        let deviceName = UIDevice.current.name
+        #elseif os(watchOS)
+        let deviceName = WKInterfaceDevice.current().name
+        #else
+        let deviceName = "unknown"
+        #endif
+        return DeviceStatus(device: "loop://\(deviceName)",
             timestamp: date,
             pumpStatus: pumpStatus,
             uploaderStatus: uploaderStatus,
