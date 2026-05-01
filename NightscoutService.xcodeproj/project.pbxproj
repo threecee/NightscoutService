@@ -240,6 +240,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A91BAC5B22BC6DAC00ABF1BB /* NightscoutServiceKit.framework in Frameworks */,
+				C1C1349827DD35260097B5AD /* LoopKitUI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
