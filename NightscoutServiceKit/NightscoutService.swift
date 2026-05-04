@@ -38,8 +38,18 @@ public final class NightscoutService: Service {
     public var siteURL: URL?
 
     public var apiSecret: String?
-    
+
     public var isOnboarded: Bool
+
+    /// B.11.2.1: closure invoked when building each devicestatus to embed a
+    /// signed driver-token rendezvous payload at JSON path
+    /// `loop.testingDetails.driverToken`. Set by `LoopAppManager` to a
+    /// closure that calls `HandoffOrchestrator.shared.buildSignedRendezvous()
+    /// ?.dictionaryRepresentation`. Returns nil when no rendezvous is
+    /// available (e.g. not currently driver, peer token not yet seen, no
+    /// Nightscout API secret). When nil the `testingDetails` field is
+    /// omitted entirely so caretakers don't see stale entries.
+    public var driverTokenProvider: (() -> [String: Any]?)?
 
     public let otpManager: OTPManager
     
@@ -297,8 +307,15 @@ extension NightscoutService: RemoteDataService {
             }
         }
 
+        // B.11.2.1: invoke the driver-token provider once per upload batch.
+        // Every devicestatus in this batch carries the same rendezvous —
+        // they're produced from the same Loop tick, so the provider's view
+        // of "current driver + tokens" is consistent for the batch.
+        let driverTokenDict = driverTokenProvider?()
+
         let statuses = uploadPairs.map { (decision, automaticDoseDecision) in
-            return decision.deviceStatus(automaticDoseDecision: automaticDoseDecision)
+            return decision.deviceStatus(automaticDoseDecision: automaticDoseDecision,
+                                         driverTokenDict: driverTokenDict)
         }
 
         guard statuses.count > 0 else {

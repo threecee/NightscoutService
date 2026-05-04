@@ -156,7 +156,8 @@ extension StoredDosingDecision {
         return UploaderStatus(name: uploaderName, timestamp: date, battery: battery)
     }
 
-    func deviceStatus(automaticDoseDecision: StoredDosingDecision?) -> DeviceStatus {
+    public func deviceStatus(automaticDoseDecision: StoredDosingDecision?,
+                             driverTokenDict: [String: Any]? = nil) -> DeviceStatus {
         #if os(iOS)
         let deviceName = UIDevice.current.name
         #elseif os(watchOS)
@@ -164,6 +165,29 @@ extension StoredDosingDecision {
         #else
         let deviceName = "unknown"
         #endif
+
+        // B.11.2.1: embed the driver-token rendezvous (B.11.2 producer) into
+        // the existing free-form `LoopStatus.testingDetails` map so it lands
+        // at JSON path `loop.testingDetails.driverToken`. NightscoutKit's
+        // `LoopStatus` has fixed keys, so we cannot add `loop.driverToken`
+        // at the top level without forking the upstream package — see
+        // /tmp/B11.2-phase1-discovery.md for details. Caretaker apps read
+        // from `loop.testingDetails.driverToken` to discover the current
+        // driver's APNs token + signature.
+        //
+        // Merge semantics: future contributors may add other keys to
+        // testingDetails alongside driverToken — this function preserves
+        // whatever the caller passes in `driverTokenDict` and only adds the
+        // single "driverToken" key. When `driverTokenDict` is nil (no
+        // rendezvous available, not currently driver, no API secret, etc.)
+        // the field is omitted entirely so caretakers don't see stale data.
+        let testingDetails: [String: Any]?
+        if let driverTokenDict = driverTokenDict {
+            testingDetails = ["driverToken": driverTokenDict]
+        } else {
+            testingDetails = nil
+        }
+
         return DeviceStatus(device: "loop://\(deviceName)",
             timestamp: date,
             pumpStatus: pumpStatus,
@@ -177,7 +201,8 @@ extension StoredDosingDecision {
                                    automaticDoseRecommendation: loopStatusAutomaticDoseRecommendation,
                                    recommendedBolus: loopStatusRecommendedBolus,
                                    enacted: automaticDoseDecision?.loopStatusEnacted,
-                                   failureReason: automaticDoseDecision?.loopStatusFailureReason),
+                                   failureReason: automaticDoseDecision?.loopStatusFailureReason,
+                                   testingDetails: testingDetails),
             overrideStatus: overrideStatus)
     }
     
